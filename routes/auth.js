@@ -1,12 +1,11 @@
 const express = require("express");
-const bcrypt = require("bcrypt"); // ✅ use bcrypt (installed)
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-/* ================= REGISTER ================= */
 router.post("/register", async (req, res) => {
   try {
     const { name, email, password, age, dob, contact } = req.body;
@@ -32,7 +31,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-/* ================= LOGIN ================= */
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -51,7 +50,7 @@ router.post("/login", async (req, res) => {
       expiresIn: "1h",
     });
 
-    // ✅ Redis SET (session)
+   
     await req.redisClient.set(`token:${token}`, user._id.toString(), {
       EX: 3600,
     });
@@ -62,7 +61,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-/* ================= GET PROFILE ================= */
+
 router.get("/profile", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
@@ -75,7 +74,7 @@ router.get("/profile", authMiddleware, async (req, res) => {
   }
 });
 
-/* ================= UPDATE PROFILE ================= */
+
 router.put("/profile", authMiddleware, async (req, res) => {
   try {
     const { name, age, dob, contact } = req.body;
@@ -93,3 +92,4 @@ router.put("/profile", authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+
